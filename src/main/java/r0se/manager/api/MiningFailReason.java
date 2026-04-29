@@ -1,0 +1,25 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
+package r0se.manager.api;
+
+public enum MiningFailReason {
+    NONE,
+    NO_PLAYER,
+    NO_WORLD,
+    NO_INTERACTION_MANAGER,
+    NO_NETWORK_HANDLER,
+    INVALID_TARGET,
+    INVALID_FACE,
+    INVALID_ACTION,
+    RANGE_FAILED,
+    STRICT_DIRECTION_FAILED,
+    ROTATION_REJECTED,
+    ROTATION_WAITING,
+    DELAY_WAITING,
+    STATE_REJECTED,
+    VANILLA_REJECTED,
+    ACCESSOR_MISSING;
+
+}
+

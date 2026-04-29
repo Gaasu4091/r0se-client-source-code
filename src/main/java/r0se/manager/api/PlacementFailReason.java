@@ -1,0 +1,25 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
+package r0se.manager.api;
+
+public enum PlacementFailReason {
+    NONE,
+    NO_PLAYER,
+    NO_WORLD,
+    NO_INTERACTION_MANAGER,
+    NO_NETWORK_HANDLER,
+    NO_ITEM,
+    MULTITASK_BLOCKED,
+    TARGET_NOT_REPLACEABLE,
+    ENTITY_COLLISION,
+    NO_CLICKABLE_SIDE,
+    STRICT_DIRECTION_FAILED,
+    RANGE_FAILED,
+    ROTATION_REJECTED,
+    SWAP_FAILED,
+    INTERACT_REJECTED,
+    AIRPLACE_REJECTED;
+
+}
+

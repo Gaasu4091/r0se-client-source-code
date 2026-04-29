@@ -1,0 +1,97 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
+package r0se.api.event;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import r0se.api.event.Event;
+import r0se.api.event.Listener;
+import r0se.api.event.Subscribe;
+
+public class EventHandler {
+    private final Map<Object, List<Listener>> listeners = new ConcurrentHashMap<Object, List<Listener>>();
+    private final Map<Class<?>, List<Listener>> staticListeners = new ConcurrentHashMap<Class<?>, List<Listener>>();
+    private final Map<Class<?>, List<Listener>> listenerMap = new ConcurrentHashMap<Class<?>, List<Listener>>();
+
+    public void subscribe(Object object) {
+        for (Listener listener : this.getListeners(object.getClass(), object)) {
+            this.insert(this.listenerMap.computeIfAbsent(listener.getSubscriber(), aClass -> new CopyOnWriteArrayList()), listener);
+        }
+    }
+
+    public void unsubscribe(Object object) {
+        for (Listener listener : this.getListeners(object.getClass(), object)) {
+            List<Listener> listeners = this.listenerMap.get(listener.getSubscriber());
+            if (listeners == null) continue;
+            listeners.remove(listener);
+        }
+    }
+
+    public void post(Event event) {
+        List<Listener> listeners = this.listenerMap.get(event.getClass());
+        if (listeners == null) {
+            return;
+        }
+        for (Listener listener : listeners) {
+            Object owner = listener.getOwner();
+            listener.invoke(event);
+        }
+    }
+
+    public boolean isListening(Class<?> eventKlass) {
+        List<Listener> listeners = this.listenerMap.get(eventKlass);
+        return listeners != null && !listeners.isEmpty();
+    }
+
+    private List<Listener> getListeners(Class<?> klass, Object object) {
+        if (object == null) {
+            return this.staticListeners.computeIfAbsent(klass, ignored -> {
+                CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+                this.processListeners(listeners, klass, null);
+                return listeners;
+            });
+        }
+        List<Listener> cached = this.listeners.get(object);
+        if (cached != null) {
+            return cached;
+        }
+        CopyOnWriteArrayList<Listener> appliedListeners = new CopyOnWriteArrayList<Listener>();
+        this.processListeners(appliedListeners, klass, object);
+        this.listeners.put(object, appliedListeners);
+        return appliedListeners;
+    }
+
+    private void processListeners(List<Listener> listeners, Class<?> klass, Object object) {
+        for (Method method : klass.getDeclaredMethods()) {
+            if (!this.isValid(method)) continue;
+            listeners.add(new Listener(klass, object, method));
+        }
+        if (klass.getSuperclass() != null) {
+            this.processListeners(listeners, klass.getSuperclass(), object);
+        }
+    }
+
+    private boolean isValid(Method method) {
+        if (!method.isAnnotationPresent(Subscribe.class)) {
+            return false;
+        }
+        if (method.getReturnType() != Void.TYPE) {
+            return false;
+        }
+        if (method.getParameterCount() != 1) {
+            return false;
+        }
+        return !method.getParameters()[0].getType().isPrimitive();
+    }
+
+    private void insert(List<Listener> listeners, Listener listener) {
+        int index;
+        for (index = 0; index < listeners.size() && listener.getPriority() <= listeners.get(index).getPriority(); ++index) {
+        }
+        listeners.add(index, listener);
+    }
+}

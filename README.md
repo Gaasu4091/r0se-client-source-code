@@ -6,4 +6,4 @@ R0SE Client source code, ai coderたちの最高傑作爆笑
 
 https://github.com/7rn5/R0SE-Release-official
 
-7rn5君はgithubを消しました笑
+7rn5君はR0SE Clientのgithubを消しました笑

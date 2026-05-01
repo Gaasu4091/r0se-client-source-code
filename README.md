@@ -5,3 +5,5 @@ https://youtu.be/ELjSYswHe58
 R0SE Client source code, ai coderたちの最高傑作爆笑
 
 https://github.com/7rn5/R0SE-Release-official
+
+7rn5君はgithubを消しました笑
